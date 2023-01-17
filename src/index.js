@@ -9,19 +9,55 @@ import Item from './models/item';
 
 // Local Storage
 const DB = 'kevins-loot-table';
-if (!localStorage.getItem(DB)) localStorage.setItem(DB, JSON.stringify({}));
+
+function initializeLocalStorage() {
+    let initialData;
+
+    if (!localStorage.getItem(DB)) {
+        localStorage.setItem(DB, JSON.stringify({}));
+    } else {
+        initialData = JSON.parse(localStorage.getItem(DB));
+
+        if (initialData.items) {
+            // Set index values
+            const withIndexes = initialData.items.map((item, index) => {
+                if (item.index === undefined) {
+                    console.log(`Setting index for ${item}`);
+                    return { ...item, index };
+                }
+
+                return item;
+            });
+
+            initialData.items = withIndexes;
+            localStorage.setItem(DB, JSON.stringify(initialData));
+        }
+    }
+}
+
+initializeLocalStorage();
 
 const data = JSON.parse(localStorage.getItem(DB));
 
 // Killer article on the topic of Mithril state management:
 // https://kevinfiol.com/blog/simple-state-management-in-mithriljs/
 const state = {
-    items: data.items || []
+    items: data.items ? data.items.map(item => new Item(item)) : []
 };
 
 const actions = {
     addItem: (item) => {
-        state.items.push(new Item(item.name, item.description, item.rarity));
+        state.items.push(new Item(item));
+        localStorage.setItem(DB, JSON.stringify(state));
+    },
+    updateItem: (index, key, value) => {
+        const item = state.items[index];
+        const newItem = {
+            ...item,
+            [key]: value
+        };
+
+        state.items.splice(index, 1, newItem);
         localStorage.setItem(DB, JSON.stringify(state));
     },
     removeItem: (index) => {

@@ -1,4 +1,5 @@
 import m from 'mithril';
+import ItemTable from '../components/ItemTable';
 
 const rarities = ['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary', 'Artifact'];
 const options = rarities.map(rarity => m(`option[value=${rarity}]`, rarity));
@@ -6,20 +7,35 @@ const options = rarities.map(rarity => m(`option[value=${rarity}]`, rarity));
 export default function FirstScreen() {
     return {
         view: ({ attrs: { state, actions } }) => m('#first-screen', [
-            m('h2.lhs.mb3', `Vault of Magic Items`),
+            m('h2.lhs.mb3', [
+                m('span.mr3', 'Vault of Magic Items'),
+                m('button', {
+                    type: 'button',
+                    class: 'bg-blu blanc p3 br1',
+                    onclick: () => {
+                        const result = Math.floor(Math.random() * (state.items.length));
+                        alert(`You rolled ${result}: ${state.items[result]}`);
+                    }
+                }, 'Roll for Item')
+            ]),
             m('div.r', [
-                m('div.c4', [
+                m('div.c6.mb3', [
                     m('form#new-magic-item', {
                         onsubmit: (e) => {
                             e.preventDefault();
                             const { target: form } = e;
                             const inputs = Array.from(form.elements);
+                            const newIndex = state.items.length;
+
                             let item = {};
                             inputs.forEach((element) => {
                                 if(element.id != "") item[element.id] = element.value;
 
                                 element.value = "";
                             });
+
+                            // Set index for item
+                            item.index = newIndex;
 
                             actions.addItem(item);
                         }
@@ -55,21 +71,8 @@ export default function FirstScreen() {
                         },'Add Item')
                     ])
                 ]),
-                m('div.c4', [
-                    m('table', [
-                        m('thead', [
-                            m('th', 'Name'),
-                            m('th', 'Description'),
-                            m('th', 'Rarity')
-                        ]),
-                        m('tbody', state.items.map((item) => {
-                            return m('tr', [
-                                m('td', item.name),
-                                m('td', item.description),
-                                m('td', item.rarity)
-                            ])
-                        }))
-                    ])
+                m('div.c6.mb3', [
+                    m(ItemTable, { items: state.items, actions })
                 ])
             ])
         ])
