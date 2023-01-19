@@ -61,7 +61,8 @@ const actions = {
         localStorage.setItem(DB, JSON.stringify(state));
     },
     removeItem: (index) => {
-        state.items.splice(index, 1);
+        const arrayIndex = state.items.findIndex(item => item.index === index);
+        state.items.splice(arrayIndex, 1);
         localStorage.setItem(DB, JSON.stringify(state));
     },
 };

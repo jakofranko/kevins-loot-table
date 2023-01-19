@@ -1,5 +1,6 @@
 import m from 'mithril';
 import ItemTable from '../components/ItemTable';
+import PlayerTables from '../components/PlayerTables';
 
 const rarities = ['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary', 'Artifact'];
 const options = rarities.map(rarity => m(`option[value=${rarity}]`, rarity));
@@ -65,6 +66,15 @@ export default function FirstScreen() {
                             placeholder: 'e.g., Uncommon',
                         }, options),
                         m('br'),
+                        m('label[for=player]', 'Who is this item for?'),
+                        m('br'),
+                        m('input', {
+                            id: 'player',
+                            class: 'bg-blanc br1 sh5-s vw7-s mb3 w9',
+                            type: 'text',
+                            placeholder: 'e.g., The Player that Kevin Loves the Most (Jake)',
+                        }),
+                        m('br'),
                         m('button', {
                             type: 'submit',
                             class: 'bg-blu blanc p3 br1 f5'
@@ -74,7 +84,8 @@ export default function FirstScreen() {
                 m('div.c6.mb3', [
                     m(ItemTable, { items: state.items, actions })
                 ])
-            ])
+            ]),
+            m(PlayerTables, { items: state.items, actions })
         ])
     }
 }

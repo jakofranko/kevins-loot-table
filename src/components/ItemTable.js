@@ -1,6 +1,7 @@
 import m from 'mithril';
 
 const EditableCell = {
+    onremove: () => console.log('removing a cell'),
     view: ({ attrs, children }) => {
         return m('td', {
             contenteditable: true,
@@ -30,10 +31,12 @@ const ItemTable = {
                 m('th', '#'),
                 m('th', 'Name'),
                 m('th', 'Description'),
-                m('th', 'Rarity')
+                m('th', 'Rarity'),
+                m('th', 'Player'),
+                m('th', '')
             ]),
             m('tbody', items.map((item) => {
-                return m('tr', [
+                return m('tr', { key: item.index }, [
                     m('td', item.index),
                     m(EditableCell, {
                         actions,
@@ -49,7 +52,21 @@ const ItemTable = {
                         actions,
                         index: item.index,
                         field: 'rarity'
-                    }, item.rarity)
+                    }, item.rarity),
+                    m(EditableCell, {
+                        actions,
+                        index: item.index,
+                        field: 'player'
+                    }, item.player),
+                    m('td', m('button', {
+                        type: 'button',
+                        class: 'bg-red blanc p3 br1',
+                        onclick: () => {
+                            debugger;
+                            actions.removeItem(item.index);
+                            m.redraw.sync();
+                        }
+                    }, '🗑'))
                 ])
             }))
         ])
