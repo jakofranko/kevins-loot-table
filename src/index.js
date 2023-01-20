@@ -31,6 +31,22 @@ function initializeLocalStorage() {
 
             initialData.items = withIndexes;
             localStorage.setItem(DB, JSON.stringify(initialData));
+
+            // Check for duplicate indexes
+            const hasDuplicateIndices = initialData.items.some((item, index, array) => {
+                const dupes = array.filter(i => i.index === item.index);
+                return dupes.length > 1;
+            });
+
+            if (hasDuplicateIndices) {
+                const reIndexed = initialData.items.map((item, index) => {
+                    item.index = index;
+                    return item;
+                });
+
+                initialData.items = reIndexed;
+                localStorage.setItem(DB, JSON.stringify(initialData));
+            }
         }
     }
 }
